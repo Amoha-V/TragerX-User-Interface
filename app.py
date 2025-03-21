@@ -8,6 +8,7 @@ import random
 import base64
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
+import qrcode  # Add this library for dynamic QR code generation
 
 # Set page configuration
 st.set_page_config(
@@ -29,40 +30,33 @@ def create_logo_image():
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return f"data:image/png;base64,{img_str}"
 
-# Function to create a QR code image
+# Function to create a dynamic QR code image
 def create_qr_code_image():
-    img = Image.new('RGB', (200, 200), color=(255, 255, 255))
-    d = ImageDraw.Draw(img)
+    # Generate a random number between 1 and 4
+    random_number = random.randint(1, 4)
     
-    # Draw a simple QR code pattern
-    square_size = 10
-    for x in range(0, 20):
-        for y in range(0, 20):
-            if random.random() > 0.7:
-                d.rectangle([x*square_size, y*square_size, 
-                           (x+1)*square_size, (y+1)*square_size], 
-                           fill=(0, 0, 0))
+    # Create a QR code with the random number as data
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(str(random_number))  # Embed the random number in the QR code
+    qr.make(fit=True)
     
-    # Add corner markers
-    for x, y in [(0,0), (0,17), (17,0)]:
-        d.rectangle([x*square_size, y*square_size, 
-                   (x+3)*square_size, (y+3)*square_size], 
-                   fill=(0, 0, 0))
-        d.rectangle([(x+1)*square_size, (y+1)*square_size, 
-                   (x+2)*square_size, (y+2)*square_size], 
-                   fill=(255, 255, 255))
+    # Create an image from the QR code
+    qr_img = qr.make_image(fill_color="black", back_color="white")
     
-    # Add text
-    d.text((40, 85), "Scan Me", fill=(0, 0, 0))
-    
+    # Convert the QR code image to a base64 string
     buffered = BytesIO()
-    img.save(buffered, format="PNG")
+    qr_img.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue()).decode()
-    return f"data:image/png;base64,{img_str}"
+    return f"data:image/png;base64,{img_str}", random_number
 
 # Create the logo and QR code images
 logo_image = create_logo_image()
-qr_code_image = create_qr_code_image()
+qr_code_image, random_number = create_qr_code_image()
 
 # Sidebar for navigation
 st.sidebar.title("TragerX")
@@ -269,6 +263,7 @@ else:
             if user_id:
                 st.success(f"Connected to user account: {user_id}")
                 st.session_state.connected = True
+                st.info(f"Random number generated: {random_number}")  # Display the random number
             else:
                 st.error("Please enter a valid User ID")
     
