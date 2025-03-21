@@ -54,9 +54,19 @@ def create_qr_code_image():
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return f"data:image/png;base64,{img_str}", random_number
 
+# Function to generate airline and counter numbers based on the QR code data
+def generate_airline_and_counter(qr_data):
+    # Use the QR code data to generate consistent airline and counter numbers
+    airline_number = (qr_data % 3) + 1  # Airline number between 1 and 3
+    counter_number = (qr_data % 2) + 1  # Counter number between 1 and 2
+    return airline_number, counter_number
+
 # Create the logo and QR code images
 logo_image = create_logo_image()
 qr_code_image, random_number = create_qr_code_image()
+
+# Generate airline and counter numbers based on the QR code data
+airline_number, counter_number = generate_airline_and_counter(random_number)
 
 # Sidebar for navigation
 st.sidebar.title("TragerX")
@@ -263,7 +273,10 @@ else:
             if user_id:
                 st.success(f"Connected to user account: {user_id}")
                 st.session_state.connected = True
-                st.info(f"Random number generated: {random_number}")  # Display the random number
+                
+                # Display airline and counter numbers
+                st.info(f"Airline Number: {airline_number}")
+                st.info(f"Counter Number: {counter_number}")
             else:
                 st.error("Please enter a valid User ID")
     
