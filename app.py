@@ -8,7 +8,7 @@ import random
 import base64
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
-import qrcode  # Add this library for dynamic QR code generation
+import qrcode
 
 # Set page configuration
 st.set_page_config(
@@ -32,8 +32,8 @@ def create_logo_image():
 
 # Function to create a dynamic QR code image
 def create_qr_code_image():
-    # Generate a random number between 1 and 4
-    random_number = random.randint(1, 4)
+    # Generate a random number between 1 and 3
+    random_number = random.randint(1, 3)
     
     # Create a QR code with the random number as data
     qr = qrcode.QRCode(
@@ -56,9 +56,11 @@ def create_qr_code_image():
 
 # Function to generate airline and counter numbers based on the QR code data
 def generate_airline_and_counter(qr_data):
-    # Use the QR code data to generate consistent airline and counter numbers
-    airline_number = (qr_data % 3) + 1  # Airline number between 1 and 3
-    counter_number = (qr_data % 2) + 1  # Counter number between 1 and 2
+    # Airline number is between 1 and 3
+    airline_number = qr_data
+    # Counter number is either A or B for each airline
+    counter_suffix = "A" if random.random() < 0.5 else "B"  # Randomly choose A or B
+    counter_number = f"{airline_number}{counter_suffix}"  # Combine airline number and suffix
     return airline_number, counter_number
 
 # Create the logo and QR code images
@@ -67,6 +69,11 @@ qr_code_image, random_number = create_qr_code_image()
 
 # Generate airline and counter numbers based on the QR code data
 airline_number, counter_number = generate_airline_and_counter(random_number)
+
+# Display the random number, airline number, and counter number
+st.sidebar.write(f"Random number generated: {random_number}")
+st.sidebar.write(f"Airline Number: {airline_number}")
+st.sidebar.write(f"Counter Number: {counter_number}")
 
 # Sidebar for navigation
 st.sidebar.title("TragerX")
