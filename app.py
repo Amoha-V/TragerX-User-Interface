@@ -314,7 +314,7 @@ else:
                     time.sleep(0.05)
                     progress_bar.progress(i)
                 
-                st.balloons()
+                # Removed st.balloons() here
                 st.success("Your trolley has arrived! You can now use the 'My Trolley' tab to control it.")
                 st.session_state.has_trolley = True
         
